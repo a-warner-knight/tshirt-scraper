@@ -1,5 +1,22 @@
 // Configuration file for the image scraper
-module.exports = {
+export interface ScraperConfig {
+    GALLERY_URL: string;
+    OUTPUT_DIR: string;
+    USER_AGENT: string;
+    REQUEST_DELAY: number;
+    IMAGE_QUALITY: string;
+    FILENAME_PATTERN: string;
+    IMAGE_SELECTORS: string[];
+    ACCEPTED_EXTENSIONS: string[];
+    MIN_IMAGE_SIZE: number;
+    MAX_CONCURRENT_DOWNLOADS: number;
+    MAX_RETRIES: number;
+    RETRY_DELAY: number;
+    VERBOSE_LOGGING: boolean;
+    CUSTOM_HEADERS: Record<string, string>;
+}
+
+const CONFIG: ScraperConfig = {
     // Base URL for the gallery - make this configurable
     // GALLERY_URL: 'https://thetshirtco.com.au/collections/t-shirts-polos-custom-printing/products/essential-tee-custom-printed',
     GALLERY_URL: "https://thetshirtco.com.au/collections/jumpers-hoodies-printing-custom/products/essential-hoodie-custom-printed",
@@ -56,4 +73,6 @@ module.exports = {
         'Connection': 'keep-alive',
         'Upgrade-Insecure-Requests': '1',
     }
-}; 
+};
+
+export default CONFIG; 

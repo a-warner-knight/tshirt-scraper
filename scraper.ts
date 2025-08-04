@@ -1,14 +1,31 @@
-const axios = require('axios');
-const cheerio = require('cheerio');
-const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
+import axios, { AxiosInstance } from 'axios';
+import * as cheerio from 'cheerio';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as readline from 'readline';
+import CONFIG, { ScraperConfig } from './config';
 
-// Import configuration
-const CONFIG = require('./config');
+type ImageOption = {
+    index: number;
+    basePath: string;
+    queryStrings: string[];
+    extension: string;
+    filename: string;
+    subPath: string;
+    domain: string;
+}
+
+type DisplayOptionsResult = {
+    options: ImageOption[];
+    allQueryParams: string[];
+}
 
 class ImageScraper {
-    constructor(config = CONFIG) {
+    private config: ScraperConfig;
+    private axiosInstance: AxiosInstance;
+    private rl: readline.Interface;
+
+    constructor(config: ScraperConfig = CONFIG) {
         this.config = config;
         this.axiosInstance = axios.create({
             headers: {
@@ -30,24 +47,24 @@ class ImageScraper {
         });
     }
 
-    async delay(ms) {
+    private async delay(ms: number): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async fetchHTML(url) {
+    private async fetchHTML(url: string): Promise<string> {
         try {
             console.log(`Fetching HTML from: ${url}`);
             const response = await this.axiosInstance.get(url);
             return response.data;
         } catch (error) {
-            console.error(`Error fetching HTML from ${url}:`, error.message);
+            console.error(`Error fetching HTML from ${url}:`, error instanceof Error ? error.message : 'Unknown error');
             throw error;
         }
     }
 
-    extractImageUrls(html) {
+    private extractImageUrls(html: string): string[] {
         const $ = cheerio.load(html);
-        const imageUrls = new Set();
+        const imageUrls = new Set<string>();
 
         // Use configurable selectors
         this.config.IMAGE_SELECTORS.forEach(selector => {
@@ -67,7 +84,7 @@ class ImageScraper {
                     
                     // Filter out small images, icons, and check file extensions
                     const hasValidExtension = this.config.ACCEPTED_EXTENSIONS.some(ext => 
-                        src.toLowerCase().includes(ext.replace('.', ''))
+                        src?.toLowerCase().includes(ext.replace('.', ''))
                     );
                     
                     if (src && !src.includes('icon') && !src.includes('logo') && 
@@ -81,8 +98,8 @@ class ImageScraper {
         return Array.from(imageUrls);
     }
 
-    analyzeImageUrls(imageUrls) {
-        const groupedImages = new Map();
+    private analyzeImageUrls(imageUrls: string[]): Map<string, Set<string>> {
+        const groupedImages = new Map<string, Set<string>>();
         
         imageUrls.forEach(url => {
             try {
@@ -91,10 +108,10 @@ class ImageScraper {
                 const queryString = urlObj.search;
                 
                 if (!groupedImages.has(basePath)) {
-                    groupedImages.set(basePath, new Set());
+                    groupedImages.set(basePath, new Set<string>());
                 }
                 
-                groupedImages.get(basePath).add(queryString);
+                groupedImages.get(basePath)!.add(queryString);
             } catch (error) {
                 console.warn(`Invalid URL: ${url}`);
             }
@@ -103,14 +120,14 @@ class ImageScraper {
         return groupedImages;
     }
 
-    displayImageOptions(groupedImages) {
+    private displayImageOptions(groupedImages: Map<string, Set<string>>): DisplayOptionsResult {
         console.log('\n=== Available Image Groups ===\n');
         
-        const options = [];
+        const options: ImageOption[] = [];
         let optionIndex = 1;
         
         // Collect all unique query parameters for bulk selection
-        const allQueryParams = new Set();
+        const allQueryParams = new Set<string>();
         
         groupedImages.forEach((queryStrings, basePath) => {
             const queryArray = Array.from(queryStrings);
@@ -141,7 +158,7 @@ class ImageScraper {
             
             // Parse the path to separate domain, sub-path, and filename
             const pathParts = basePath.split('/');
-            const filename = pathParts.pop(); // Get the actual filename
+            const filename = pathParts.pop() || ''; // Get the actual filename
             const subPath = pathParts.slice(1).join('/'); // Get the sub-path (remove first empty element)
             const domain = 'thetshirtco.com.au';
             
@@ -185,7 +202,8 @@ class ImageScraper {
         return { options, allQueryParams: Array.from(allQueryParams) };
     }
 
-    async getUserSelection(options, allQueryParams) {
+    private async getUserSelection(options: ImageOption[], allQueryParams: string[]): Promise<ImageOption[] | null> {
+
         return new Promise((resolve) => {
             console.log('=== Selection Options ===');
             console.log('Enter the number of the image group you want to download:');
@@ -214,6 +232,12 @@ class ImageScraper {
                 const selectedIndex = parseInt(answer) - 1;
                 if (selectedIndex >= 0 && selectedIndex < options.length) {
                     const selected = options[selectedIndex];
+                    if (selected === undefined) {
+                        console.log('No selection made. Exiting.');
+                        this.rl.close();
+                        resolve(null);
+                        return;
+                    }
                     
                     console.log(`\nSelected: **${selected.filename}**`);
                     console.log(`Path: /${selected.subPath}`);
@@ -232,16 +256,16 @@ class ImageScraper {
                             this.rl.question('Enter variant number(s) separated by commas: ', (variantSelection) => {
                                 const variantIndices = variantSelection.split(',').map(s => parseInt(s.trim()) - 1);
                                 const selectedVariants = variantIndices
-                                    .filter(i => i >= 0 && i < selected.queryStrings.length)
-                                    .map(i => selected.queryStrings[i]);
+                                    .filter(i => i >= 0 && i < (selected.queryStrings.length))
+                                    .map(i => selected.queryStrings[i] ?? '');
                                 
-                                const finalSelection = {
+                                const finalSelection: ImageOption = {
                                     ...selected,
                                     queryStrings: selectedVariants
                                 };
                                 
                                 this.rl.close();
-                                resolve([finalSelection]);
+                                resolve([finalSelection as ImageOption]);
                             });
                         }
                     });
@@ -254,7 +278,7 @@ class ImageScraper {
         });
     }
 
-    async handleBulkSelection(allQueryParams, options) {
+    private async handleBulkSelection(allQueryParams: string[], options: ImageOption[]): Promise<ImageOption[] | null> {
         return new Promise((resolve) => {
             console.log('\n=== Bulk Download by Query Parameter ===');
             console.log('Available query parameters:');
@@ -266,7 +290,7 @@ class ImageScraper {
             this.rl.question('\nEnter the number of the query parameter: ', (paramAnswer) => {
                 const paramIndex = parseInt(paramAnswer) - 1;
                 if (paramIndex >= 0 && paramIndex < allQueryParams.length) {
-                    const selectedParam = allQueryParams[paramIndex];
+                    const selectedParam = allQueryParams[paramIndex] ?? '';
                     
                     console.log(`\nSelected parameter: ${selectedParam}`);
                     console.log('Finding all images with this parameter...');
@@ -295,7 +319,7 @@ class ImageScraper {
         });
     }
 
-    getFileExtension(imageUrl) {
+    private getFileExtension(imageUrl: string): string {
         // Search the URL for image format indicators
         const urlLower = imageUrl.toLowerCase();
         
@@ -324,7 +348,7 @@ class ImageScraper {
         return '.jpg';
     }
 
-    async downloadImage(imageUrl, filename) {
+    private async downloadImage(imageUrl: string, filename: string): Promise<string> {
         try {
             console.log(`Downloading: ${imageUrl}`);
             const response = await this.axiosInstance.get(imageUrl, {
@@ -344,12 +368,12 @@ class ImageScraper {
                 writer.on('error', reject);
             });
         } catch (error) {
-            console.error(`Error downloading ${imageUrl}:`, error.message);
+            console.error(`Error downloading ${imageUrl}:`, error instanceof Error ? error.message : 'Unknown error');
             throw error;
         }
     }
 
-    async scrapeImages() {
+    public async scrapeImages(): Promise<string[]> {
         try {
             console.log('Starting image scraping...');
             console.log(`Target URL: ${this.config.GALLERY_URL}`);
@@ -383,13 +407,13 @@ class ImageScraper {
             }
 
             // Download selected images
-            const downloadedFiles = [];
+            const downloadedFiles: string[] = [];
             let fileIndex = 1;
             
             for (const option of selectedOptions) {
                 for (const queryString of option.queryStrings) {
                     const imageUrl = `https://thetshirtco.com.au${option.basePath}${queryString}`;
-                    const filename = `${this.config.FILENAME_PATTERN.replace('{index}', fileIndex)}${option.extension}`;
+                    const filename = `${this.config.FILENAME_PATTERN.replace('{index}', fileIndex.toString())}${option.extension}`;
                     
                     try {
                         await this.downloadImage(imageUrl, filename);
@@ -410,25 +434,25 @@ class ImageScraper {
             return downloadedFiles;
             
         } catch (error) {
-            console.error('Scraping failed:', error.message);
+            console.error('Scraping failed:', error instanceof Error ? error.message : 'Unknown error');
             throw error;
         }
     }
 }
 
 // Main execution
-async function main() {
+async function main(): Promise<void> {
     try {
         const scraper = new ImageScraper();
         await scraper.scrapeImages();
     } catch (error) {
-        console.error('Script failed:', error.message);
+        console.error('Script failed:', error instanceof Error ? error.message : 'Unknown error');
         process.exit(1);
     }
 }
 
 // Export for use as module
-module.exports = { ImageScraper, CONFIG };
+export { ImageScraper, CONFIG };
 
 // Run if called directly
 if (require.main === module) {
