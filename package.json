@@ -1,0 +1,25 @@
+{
+  "name": "tshirt-scraper",
+  "version": "1.0.0",
+  "description": "A Node.js script to scrape images from t-shirt websites",
+  "main": "scraper.js",
+  "scripts": {
+    "start": "node scraper.js",
+    "scrape": "node scraper.js"
+  },
+  "keywords": [
+    "scraper",
+    "images",
+    "tshirt",
+    "web-scraping"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 
