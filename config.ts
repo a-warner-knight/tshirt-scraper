@@ -1,6 +1,6 @@
 // Configuration file for the image scraper
 export interface ScraperConfig {
-    GALLERY_URL: string;
+    GALLERY_URLs: string[];
     OUTPUT_DIR: string;
     USER_AGENT: string;
     REQUEST_DELAY: number;
@@ -19,7 +19,10 @@ export interface ScraperConfig {
 const CONFIG: ScraperConfig = {
     // Base URL for the gallery - make this configurable
     // GALLERY_URL: 'https://thetshirtco.com.au/collections/t-shirts-polos-custom-printing/products/essential-tee-custom-printed',
-    GALLERY_URL: "https://thetshirtco.com.au/collections/jumpers-hoodies-printing-custom/products/essential-hoodie-custom-printed",
+    GALLERY_URLs: [
+        "https://thetshirtco.com.au/collections/jumpers-hoodies-printing-custom/products/essential-hoodie-custom-printed",
+        "https://thetshirtco.com.au/collections/t-shirts-polos-custom-printing/products/essential-tee-custom-printed",
+    ],
 
     // Output directory for downloaded images
     OUTPUT_DIR: './downloaded_images',

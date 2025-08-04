@@ -373,13 +373,43 @@ class ImageScraper {
         }
     }
 
+    private async selectGalleryUrl(): Promise<string> {
+        console.log('\n=== Available Gallery URLs ===\n');
+        
+        this.config.GALLERY_URLs.forEach((url, index) => {
+            console.log(`${index + 1}. ${url}`);
+        });
+        
+        return new Promise((resolve) => {
+            this.rl.question('\nEnter the number of the gallery URL to scrape: ', (answer) => {
+                const selectedIndex = parseInt(answer) - 1;
+                if (selectedIndex >= 0 && selectedIndex < this.config.GALLERY_URLs.length) {
+                    const selectedUrl = this.config.GALLERY_URLs[selectedIndex];
+                    if (selectedUrl) {
+                        console.log(`\nSelected URL: ${selectedUrl}`);
+                        resolve(selectedUrl);
+                    } else {
+                        console.log('Invalid URL at selected index. Using first URL by default.');
+                        resolve(this.config.GALLERY_URLs[0] || '');
+                    }
+                } else {
+                    console.log('Invalid selection. Using first URL by default.');
+                    resolve(this.config.GALLERY_URLs[0] || '');
+                }
+            });
+        });
+    }
+
     public async scrapeImages(): Promise<string[]> {
         try {
             console.log('Starting image scraping...');
-            console.log(`Target URL: ${this.config.GALLERY_URL}`);
+            
+            // Let user select which gallery URL to scrape
+            const selectedUrl = await this.selectGalleryUrl();
+            console.log(`Target URL: ${selectedUrl}`);
             
             // Fetch the HTML
-            const html = await this.fetchHTML(this.config.GALLERY_URL);
+            const html = await this.fetchHTML(selectedUrl);
             
             // Extract image URLs
             const imageUrls = this.extractImageUrls(html);
