@@ -11,6 +11,7 @@ class ImageOverlayEditor {
         this.resetBtn = document.getElementById('resetBtn');
         this.centerHorizontalBtn = document.getElementById('centerHorizontalBtn');
         this.centerVerticalBtn = document.getElementById('centerVerticalBtn');
+        this.previewModeCheckbox = document.getElementById('previewModeCheckbox');
         this.status = document.getElementById('status');
         
         // State
@@ -82,6 +83,7 @@ class ImageOverlayEditor {
         this.resetBtn.addEventListener('click', () => this.resetPosition());
         this.centerHorizontalBtn.addEventListener('click', () => this.centerHorizontal());
         this.centerVerticalBtn.addEventListener('click', () => this.centerVertical());
+        this.previewModeCheckbox.addEventListener('change', () => this.togglePreviewMode());
         
         // Global mouse events for dragging and resizing
         document.addEventListener('mousemove', (e) => this.onMouseMove(e));
@@ -229,8 +231,8 @@ class ImageOverlayEditor {
         // Draw base image
         this.ctx.drawImage(this.baseImage, offsetX, offsetY, drawWidth, drawHeight);
         
-        // Draw box if we have box data
-        if (this.boxData) {
+        // Draw box if we have box data and preview mode is off
+        if (this.boxData && !this.previewModeCheckbox.checked) {
             this.ctx.strokeStyle = '#667eea';
             this.ctx.lineWidth = 3;
             this.ctx.setLineDash([5, 5]);
@@ -472,6 +474,37 @@ class ImageOverlayEditor {
         // Constrain to canvas bounds
         const constrainedY = Math.max(0, Math.min(this.canvasHeight - designHeight, newY));
         this.designOverlay.style.top = constrainedY + 'px';
+    }
+    
+    togglePreviewMode() {
+        if (!this.designOverlay) return;
+        
+        const isPreviewMode = this.previewModeCheckbox.checked;
+        
+        if (isPreviewMode) {
+            // Hide borders, background, and handles
+            this.designOverlay.style.border = 'none';
+            this.designOverlay.style.background = 'transparent';
+            
+            // Hide resize handles
+            const handles = this.designOverlay.querySelectorAll('.resize-handle');
+            handles.forEach(handle => {
+                handle.style.display = 'none';
+            });
+        } else {
+            // Show borders, background, and handles
+            this.designOverlay.style.border = '2px dashed #667eea';
+            this.designOverlay.style.background = 'rgba(102, 126, 234, 0.1)';
+            
+            // Show resize handles
+            const handles = this.designOverlay.querySelectorAll('.resize-handle');
+            handles.forEach(handle => {
+                handle.style.display = 'block';
+            });
+        }
+        
+        // Re-render canvas to show/hide the box
+        this.renderCanvas();
     }
     
     showStatus(message, type) {
