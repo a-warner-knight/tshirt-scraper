@@ -5,6 +5,7 @@ class ImageOverlayEditor {
         this.canvasContainer = document.getElementById('canvasContainer');
         
         // Elements
+        this.baseTypeSelect = document.getElementById('baseTypeSelect');
         this.baseImageSelect = document.getElementById('baseImageSelect');
         this.designImageSelect = document.getElementById('designImageSelect');
         this.storeBtn = document.getElementById('storeBtn');
@@ -24,6 +25,8 @@ class ImageOverlayEditor {
         this.dragStart = { x: 0, y: 0 };
         this.resizeHandle = null;
         this.originalSize = { width: 0, height: 0 };
+        this.boxDataConfig = null;
+        this.currentBaseType = null;
         
         // Canvas dimensions
         this.canvasWidth = 800;
@@ -33,25 +36,36 @@ class ImageOverlayEditor {
     }
     
     async init() {
-        await this.loadImages();
-        await this.loadBoxData();
+        await this.loadBoxDataConfig();
+        await this.loadDesignImages();
         this.setupEventListeners();
         this.setupDesignOverlay();
     }
     
-    async loadImages() {
+    async loadBoxDataConfig() {
         try {
-            // Load base images
-            const baseResponse = await fetch('/api/base-images');
-            const baseImages = await baseResponse.json();
+            // Load types (root fields) from box-data.json
+            const typesResponse = await fetch('/api/types');
+            const types = await typesResponse.json();
             
-            baseImages.forEach(img => {
+            // Load full box data config
+            const configResponse = await fetch('/api/box-data');
+            this.boxDataConfig = await configResponse.json();
+            
+            // Populate base type dropdown
+            types.forEach(type => {
                 const option = document.createElement('option');
-                option.value = img.url;
-                option.textContent = img.name;
-                this.baseImageSelect.appendChild(option);
+                option.value = type;
+                option.textContent = type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                this.baseTypeSelect.appendChild(option);
             });
-            
+        } catch (error) {
+            this.showStatus('Error loading box data config: ' + error.message, 'error');
+        }
+    }
+    
+    async loadDesignImages() {
+        try {
             // Load design images
             const designResponse = await fetch('/api/design-images');
             const designImages = await designResponse.json();
@@ -63,20 +77,34 @@ class ImageOverlayEditor {
                 this.designImageSelect.appendChild(option);
             });
         } catch (error) {
-            this.showStatus('Error loading images: ' + error.message, 'error');
+            this.showStatus('Error loading design images: ' + error.message, 'error');
         }
     }
     
-    async loadBoxData() {
+    async loadBaseImages(baseType) {
         try {
-            const response = await fetch('/api/box-data');
-            this.boxData = await response.json();
+            const response = await fetch(`/api/base-images/${baseType}`);
+            const baseImages = await response.json();
+            
+            // Clear existing options
+            this.baseImageSelect.innerHTML = '<option value="">Select a base image...</option>';
+            
+            baseImages.forEach(img => {
+                const option = document.createElement('option');
+                option.value = img.url;
+                option.textContent = img.name;
+                this.baseImageSelect.appendChild(option);
+            });
+            
+            // Enable the base image select
+            this.baseImageSelect.disabled = false;
         } catch (error) {
-            this.showStatus('Error loading box data: ' + error.message, 'error');
+            this.showStatus('Error loading base images: ' + error.message, 'error');
         }
     }
     
     setupEventListeners() {
+        this.baseTypeSelect.addEventListener('change', () => this.onBaseTypeChange());
         this.baseImageSelect.addEventListener('change', () => this.onBaseImageChange());
         this.designImageSelect.addEventListener('change', () => this.onDesignImageChange());
         this.storeBtn.addEventListener('click', () => this.storePosition());
@@ -109,6 +137,34 @@ class ImageOverlayEditor {
         });
         
         this.canvasContainer.appendChild(this.designOverlay);
+    }
+    
+    async onBaseTypeChange() {
+        const selectedType = this.baseTypeSelect.value;
+        if (!selectedType) {
+            this.baseImageSelect.disabled = true;
+            this.baseImageSelect.innerHTML = '<option value="">Select a base image...</option>';
+            this.baseImage = null;
+            this.boxData = null;
+            this.renderCanvas();
+            this.updateButtons();
+            return;
+        }
+        
+        this.currentBaseType = selectedType;
+        
+        // Load box data for the selected type
+        if (this.boxDataConfig && this.boxDataConfig[selectedType]) {
+            this.boxData = this.boxDataConfig[selectedType].box;
+        }
+        
+        // Load base images for the selected type
+        await this.loadBaseImages(selectedType);
+        
+        // Clear current base image
+        this.baseImage = null;
+        this.renderCanvas();
+        this.updateButtons();
     }
     
     async onBaseImageChange() {
@@ -379,7 +435,8 @@ class ImageOverlayEditor {
             scale: { x: scaleX, y: scaleY },
             position: { x, y, width, height },
             baseImage: this.baseImageSelect.value,
-            designImage: this.designImageSelect.value
+            designImage: this.designImageSelect.value,
+            baseType: this.currentBaseType
         };
         
         try {

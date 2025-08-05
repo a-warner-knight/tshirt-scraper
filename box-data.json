@@ -1,6 +1,20 @@
 {
-  "x": 602,
-  "y": 734,
-  "width": 698,
-  "height": 570
-} 
+  "hoodie-essential": {
+    "path": "downloaded_images_hoodies",
+    "box": {
+      "x": 602,
+      "y": 734,
+      "width": 698,
+      "height": 570
+    }
+  },
+  "tee-essential": {
+    "path": "downloaded_images_tees",
+    "box": {
+      "x": 618,
+      "y": 436,
+      "width": 658,
+      "height": 842
+    }
+  }
+}

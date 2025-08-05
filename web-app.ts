@@ -5,40 +5,49 @@ import fs from 'fs';
 const app = express();
 const PORT = 3000;
 
-// Middleware
-app.use(express.json());
-app.use(express.static('public'));
-app.use('/images', express.static('downloaded_images_hoodies'));
-app.use('/designs', express.static('downloaded_images_designs'));
-
 // Load box data from JSON file
-let boxData = {
-    x: 100,
-    y: 150,
-    width: 200,
-    height: 150
-};
+let boxDataConfig: any = {};
 try {
     const boxDataPath = path.join(__dirname, 'box-data.json');
     if (fs.existsSync(boxDataPath)) {
         const boxDataContent = fs.readFileSync(boxDataPath, 'utf8');
-        boxData = JSON.parse(boxDataContent);
+        boxDataConfig = JSON.parse(boxDataContent);
     }
 } catch (error) {
     console.error('Error loading box data:', error);
 }
+
+// Middleware
+app.use(express.json());
+app.use(express.static('public'));
+app.use('/designs', express.static('downloaded_images_designs'));
+
+// Dynamic static file serving for base image types
+Object.keys(boxDataConfig).forEach(type => {
+  app.use(`/${type}`, express.static(boxDataConfig[type].path));
+});
 
 // Routes
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/api/box-data', (req, res) => {
-  res.json(boxData);
+app.get('/api/types', (req, res) => {
+  res.json(Object.keys(boxDataConfig));
 });
 
-app.get('/api/base-images', (req, res) => {
-  const imagesDir = path.join(__dirname, 'downloaded_images_hoodies');
+app.get('/api/box-data', (req, res) => {
+  res.json(boxDataConfig);
+});
+
+app.get('/api/base-images/:type', (req, res) => {
+  const type = req.params.type;
+  
+  if (!boxDataConfig[type]) {
+    return res.status(404).json({ error: 'Base type not found' });
+  }
+  
+  const imagesDir = path.join(__dirname, boxDataConfig[type].path);
   
   try {
     const files = fs.readdirSync(imagesDir);
@@ -46,12 +55,12 @@ app.get('/api/base-images', (req, res) => {
       /\.(jpg|jpeg|png|gif)$/i.test(file)
     );
     
-    res.json(imageFiles.map(file => ({
+    return res.json(imageFiles.map(file => ({
       name: file,
-      url: `/images/${file}`
+      url: `/${type}/${file}`
     })));
   } catch (error) {
-    res.status(500).json({ error: 'Failed to read images directory' });
+    return res.status(500).json({ error: 'Failed to read images directory' });
   }
 });
 
@@ -74,18 +83,54 @@ app.get('/api/design-images', (req, res) => {
 });
 
 app.post('/api/store-position', (req, res) => {
-  const { scale, position, baseImage, designImage } = req.body;
+  const { scale, position, baseImage, designImage, baseType } = req.body;
   
-  // Store the position data (you can save to a file or database)
-  console.log('Stored position data:', {
-    scale,
-    position,
-    baseImage,
-    designImage,
-    timestamp: new Date().toISOString()
-  });
-  
-  res.json({ success: true, message: 'Position data stored successfully' });
+  try {
+    // Load existing image data or create new structure
+    let imageData: any = {};
+    const imageDataPath = path.join(__dirname, 'image-data.json');
+    
+    if (fs.existsSync(imageDataPath)) {
+      const imageDataContent = fs.readFileSync(imageDataPath, 'utf8');
+      imageData = JSON.parse(imageDataContent);
+    }
+    
+    // Extract design image name from the URL
+    const designImageName = designImage.split('/').pop();
+    
+    // Ensure the base type exists in the structure
+    if (!imageData[baseType]) {
+      imageData[baseType] = {};
+    }
+    
+    // Store the position data under the design image name
+    imageData[baseType][designImageName] = {
+      x: position.x,
+      y: position.y,
+      width: position.width,
+      height: position.height,
+      scale: scale,
+      baseImage: baseImage,
+      timestamp: new Date().toISOString()
+    };
+    
+    // Write the updated data back to the file
+    fs.writeFileSync(imageDataPath, JSON.stringify(imageData, null, 2));
+    
+    console.log('Stored position data:', {
+      imageDataPath,
+      baseType,
+      designImage: designImageName,
+      position,
+      scale,
+      timestamp: new Date().toISOString()
+    });
+    
+    res.json({ success: true, message: 'Position data stored successfully' });
+  } catch (error) {
+    console.error('Error storing position data:', error);
+    res.status(500).json({ error: 'Failed to store position data' });
+  }
 });
 
 app.listen(PORT, () => {

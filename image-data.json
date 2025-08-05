@@ -1,0 +1,28 @@
+{
+  "tee-essential": {
+    "Hangry_Upsized.png": {
+      "x": 184.78125,
+      "y": 175.7890625,
+      "width": 430,
+      "height": 372,
+      "scale": {
+        "x": 2.15,
+        "y": 1.86
+      },
+      "baseImage": "/tee-essential/image_13.jpg",
+      "timestamp": "2025-08-05T15:07:24.383Z"
+    },
+    "Moon_Cheese_Upsized.png": {
+      "x": 244.78125,
+      "y": 163,
+      "width": 310,
+      "height": 396,
+      "scale": {
+        "x": 1.55,
+        "y": 1.98
+      },
+      "baseImage": "/tee-essential/image_13.jpg",
+      "timestamp": "2025-08-05T15:08:25.300Z"
+    }
+  }
+}
