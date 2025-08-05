@@ -247,6 +247,10 @@ class ImageOverlayEditor {
     onMouseDown(e) {
         if (!this.designOverlay || this.designOverlay.style.display === 'none') return;
         
+        // Prevent default drag behavior
+        e.preventDefault();
+        e.stopPropagation();
+        
         const rect = this.canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -271,6 +275,9 @@ class ImageOverlayEditor {
     
     onMouseMove(e) {
         if (!this.isDragging && !this.isResizing) return;
+        
+        // Prevent default behavior during drag/resize
+        e.preventDefault();
         
         const rect = this.canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -332,6 +339,11 @@ class ImageOverlayEditor {
     }
     
     onMouseUp(e) {
+        if (this.isDragging || this.isResizing) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
         this.isDragging = false;
         this.isResizing = false;
         this.resizeHandle = null;
