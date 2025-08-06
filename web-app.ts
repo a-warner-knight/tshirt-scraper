@@ -73,12 +73,74 @@ app.get('/api/design-images', (req, res) => {
       /\.(jpg|jpeg|png|gif)$/i.test(file)
     );
     
-    res.json(imageFiles.map(file => ({
-      name: file,
-      url: `/designs/${file}`
-    })));
+    // Load existing image data to check completion status
+    let imageData: any = {};
+    const imageDataPath = path.join(__dirname, 'image-data.json');
+    
+    if (fs.existsSync(imageDataPath)) {
+      const imageDataContent = fs.readFileSync(imageDataPath, 'utf8');
+      imageData = JSON.parse(imageDataContent);
+    }
+    
+    // For each design image, check which types have been completed
+    const designImagesWithStatus = imageFiles.map(file => {
+      const completedTypes: string[] = [];
+      
+      // Check each type in image-data.json
+      Object.keys(imageData).forEach(type => {
+        if (imageData[type] && imageData[type][file]) {
+          completedTypes.push(type);
+        }
+      });
+      
+      return {
+        name: file,
+        url: `/designs/${file}`,
+        done: completedTypes
+      };
+    });
+    
+    res.json(designImagesWithStatus);
   } catch (error) {
     res.status(500).json({ error: 'Failed to read designs directory' });
+  }
+});
+
+app.get('/api/type-completion', (req, res) => {
+  try {
+    const designsDir = path.join(__dirname, 'downloaded_images_designs');
+    const files = fs.readdirSync(designsDir);
+    const imageFiles = files.filter(file => 
+      /\.(jpg|jpeg|png|gif)$/i.test(file)
+    );
+    
+    // Load existing image data
+    let imageData: any = {};
+    const imageDataPath = path.join(__dirname, 'image-data.json');
+    
+    if (fs.existsSync(imageDataPath)) {
+      const imageDataContent = fs.readFileSync(imageDataPath, 'utf8');
+      imageData = JSON.parse(imageDataContent);
+    }
+    
+    // Check completion status for each type
+    const typeCompletion: any = {};
+    
+    Object.keys(boxDataConfig).forEach(type => {
+      const completedDesigns = imageFiles.filter(file => 
+        imageData[type] && imageData[type][file]
+      );
+      
+      typeCompletion[type] = {
+        completed: completedDesigns.length,
+        total: imageFiles.length,
+        isComplete: completedDesigns.length === imageFiles.length
+      };
+    });
+    
+    res.json(typeCompletion);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to get type completion data' });
   }
 });
 

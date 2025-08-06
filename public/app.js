@@ -45,18 +45,33 @@ class ImageOverlayEditor {
     async loadBoxDataConfig() {
         try {
             // Load types (root fields) from box-data.json
-            const typesResponse = await fetch('/api/types');
-            const types = await typesResponse.json();
+            // const typesResponse = await fetch('/api/types');
+            // const types = await typesResponse.json();
             
             // Load full box data config
             const configResponse = await fetch('/api/box-data');
             this.boxDataConfig = await configResponse.json();
             
+            // Load type completion data
+            const completionResponse = await fetch('/api/type-completion');
+            const typeCompletion = await completionResponse.json();
+
             // Populate base type dropdown
-            types.forEach(type => {
+            Object.keys(typeCompletion).forEach(type => {
                 const option = document.createElement('option');
                 option.value = type;
-                option.textContent = type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                
+                const displayName = type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                const completion = typeCompletion[type];
+                
+                if (completion && completion.isComplete) {
+                    option.textContent = `✅ ${displayName}`;
+                } else if (completion && completion.completed > 0) {
+                    option.textContent = `⚪ ${displayName} (${completion.completed}/${completion.total})`;
+                } else {
+                    option.textContent = displayName;
+                }
+                
                 this.baseTypeSelect.appendChild(option);
             });
         } catch (error) {
@@ -70,10 +85,22 @@ class ImageOverlayEditor {
             const designResponse = await fetch('/api/design-images');
             const designImages = await designResponse.json();
             
+            // Clear existing options
+            this.designImageSelect.innerHTML = '<option value="">Select a design image...</option>';
+
             designImages.forEach(img => {
                 const option = document.createElement('option');
                 option.value = img.url;
-                option.textContent = img.name;
+                
+                // Check if this design is completed for the current type
+                const isCompleted = this.currentBaseType && img.done && img.done.includes(this.currentBaseType);
+                
+                if (isCompleted) {
+                    option.textContent = `✅ ${img.name}`;
+                } else {
+                    option.textContent = `⚪ ${img.name}`;
+                }
+                
                 this.designImageSelect.appendChild(option);
             });
         } catch (error) {
@@ -98,6 +125,12 @@ class ImageOverlayEditor {
             
             // Enable the base image select
             this.baseImageSelect.disabled = false;
+            
+            // Auto-select the first base image if available
+            if (baseImages.length > 0) {
+                this.baseImageSelect.value = baseImages[0].url;
+                this.onBaseImageChange();
+            }
         } catch (error) {
             this.showStatus('Error loading base images: ' + error.message, 'error');
         }
@@ -144,6 +177,7 @@ class ImageOverlayEditor {
         if (!selectedType) {
             this.baseImageSelect.disabled = true;
             this.baseImageSelect.innerHTML = '<option value="">Select a base image...</option>';
+            this.designImageSelect.innerHTML = '<option value="">Select a design image...</option>';
             this.baseImage = null;
             this.boxData = null;
             this.renderCanvas();
@@ -160,6 +194,9 @@ class ImageOverlayEditor {
         
         // Load base images for the selected type
         await this.loadBaseImages(selectedType);
+        
+        // Reload design images with completion status for the selected type
+        await this.loadDesignImages();
         
         // Clear current base image
         this.baseImage = null;
@@ -451,6 +488,9 @@ class ImageOverlayEditor {
             const result = await response.json();
             if (result.success) {
                 this.showStatus('Position data stored successfully!', 'success');
+                
+                // Refresh the data to update completion indicators
+                await this.refreshCompletionData();
             } else {
                 this.showStatus('Error storing position data', 'error');
             }
@@ -531,6 +571,37 @@ class ImageOverlayEditor {
         // Constrain to canvas bounds
         const constrainedY = Math.max(0, Math.min(this.canvasHeight - designHeight, newY));
         this.designOverlay.style.top = constrainedY + 'px';
+    }
+    
+    async refreshCompletionData() {
+        try {
+            // Reload design images with updated completion status
+            await this.loadDesignImages();
+            
+            // Reload type completion data and update type dropdown
+            const completionResponse = await fetch('/api/type-completion');
+            const typeCompletion = await completionResponse.json();
+            
+            // Update the current type option with new completion status
+            const currentType = this.currentBaseType;
+            if (currentType) {
+                const option = this.baseTypeSelect.querySelector(`option[value="${currentType}"]`);
+                if (option) {
+                    const displayName = currentType.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    const completion = typeCompletion[currentType];
+                    
+                    if (completion && completion.isComplete) {
+                        option.textContent = `✅ ${displayName}`;
+                    } else if (completion && completion.completed > 0) {
+                        option.textContent = `🟢 ${displayName} (${completion.completed}/${completion.total})`;
+                    } else {
+                        option.textContent = displayName;
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error refreshing completion data:', error);
+        }
     }
     
     togglePreviewMode() {
