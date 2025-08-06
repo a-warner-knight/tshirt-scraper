@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { createCanvas, loadImage, Canvas, CanvasRenderingContext2D } from 'canvas';
+import { createCanvas, loadImage, Canvas, CanvasRenderingContext2D, Image } from 'canvas';
+import sharp from 'sharp';
 
 // Types for our data structures
 interface Scale {
@@ -77,6 +78,11 @@ function calculateOverlayPosition(
   };
 }
 
+async function loadImageCompatible(path: string): Promise<Image> {
+  const buffer = await sharp(path).png().toBuffer();
+  return await loadImage(buffer);
+}
+
 /**
  * Create a product image with design overlay
  */
@@ -96,12 +102,12 @@ export async function createProductImage(
     }
 
     // Load the base image
-    const baseImage = await loadImage(baseImagePath);
+    const baseImage = await loadImageCompatible(baseImagePath);
     const baseWidth = baseImage.width;
     const baseHeight = baseImage.height;
     
     // Load the design image
-    const designImage = await loadImage(designImagePath);
+    const designImage = await loadImageCompatible(designImagePath);
     
     // Create canvas with base image dimensions
     const canvas = createCanvas(baseWidth, baseHeight);
