@@ -24,5 +24,19 @@
       "baseImage": "/tee-essential/image_13.jpg",
       "timestamp": "2025-08-05T15:08:25.300Z"
     }
+  },
+  "hoodie-essential": {
+    "Drip_Upsized.png": {
+      "x": 241.98333740234375,
+      "y": 251,
+      "width": 318.5,
+      "height": 356,
+      "scale": {
+        "x": 1.5925,
+        "y": 1.78
+      },
+      "baseImage": "/hoodie-essential/image_1.jpg",
+      "timestamp": "2025-08-06T08:56:05.991Z"
+    }
   }
 }

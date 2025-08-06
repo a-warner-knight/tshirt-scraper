@@ -4,11 +4,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Downloaded images
+# Downloaded / output images
 downloaded*/
 custom_images/
 batch_*_images/
 *_images/
+output_*/
 
 # Test html
 target*/
