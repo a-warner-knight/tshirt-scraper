@@ -23,6 +23,102 @@
       },
       "baseImage": "/tee-essential/image_13.jpg",
       "timestamp": "2025-08-05T15:08:25.300Z"
+    },
+    "Blob_Cat_-_Upsized.png": {
+      "x": 263.5,
+      "y": 150,
+      "width": 272,
+      "height": 444,
+      "scale": {
+        "x": 1.36,
+        "y": 2.22
+      },
+      "baseImage": "/tee-essential/image_1.jpg",
+      "timestamp": "2025-08-07T09:24:41.639Z"
+    },
+    "Sluggin_Upsized.png": {
+      "x": 189.5,
+      "y": 56,
+      "width": 428,
+      "height": 614,
+      "scale": {
+        "x": 2.14,
+        "y": 3.07
+      },
+      "baseImage": "/tee-essential/image_1.jpg",
+      "timestamp": "2025-08-07T10:15:16.581Z"
+    },
+    "Bubbly_Life_Upsized.png": {
+      "x": 242.7833251953125,
+      "y": 149,
+      "width": 314,
+      "height": 430,
+      "scale": {
+        "x": 1.57,
+        "y": 2.15
+      },
+      "baseImage": "/tee-essential/image_1.jpg",
+      "timestamp": "2025-08-07T10:15:36.518Z"
+    },
+    "Graffiti_Snake_Upsized.png": {
+      "x": 262.2833251953125,
+      "y": 157.29998779296875,
+      "width": 275,
+      "height": 409,
+      "scale": {
+        "x": 1.375,
+        "y": 2.045
+      },
+      "baseImage": "/tee-essential/image_1.jpg",
+      "timestamp": "2025-08-07T10:15:56.453Z"
+    },
+    "Drip_Upsized.png": {
+      "x": 210.7833251953125,
+      "y": 97,
+      "width": 394,
+      "height": 513,
+      "scale": {
+        "x": 1.97,
+        "y": 2.565
+      },
+      "baseImage": "/tee-essential/image_1.jpg",
+      "timestamp": "2025-08-07T10:16:18.956Z"
+    },
+    "Rainbow_Vibe_Upsized-crop_no_bg.png": {
+      "x": 253.7833251953125,
+      "y": 187,
+      "width": 292,
+      "height": 350,
+      "scale": {
+        "x": 1.46,
+        "y": 1.75
+      },
+      "baseImage": "/tee-essential/image_1.jpg",
+      "timestamp": "2025-08-07T10:16:33.159Z"
+    },
+    "The_Retro_Tropics_Upsized.png": {
+      "x": 240.5,
+      "y": 113,
+      "width": 307,
+      "height": 466,
+      "scale": {
+        "x": 1.535,
+        "y": 2.33
+      },
+      "baseImage": "/tee-essential/image_1.jpg",
+      "timestamp": "2025-08-07T10:17:01.738Z"
+    },
+    "Untitled_Artwork.png": {
+      "x": 261.5,
+      "y": 139,
+      "width": 277,
+      "height": 397,
+      "scale": {
+        "x": 1.385,
+        "y": 1.985
+      },
+      "baseImage": "/tee-essential/image_1.jpg",
+      "timestamp": "2025-08-07T10:17:20.897Z"
     }
   },
   "hoodie-essential": {

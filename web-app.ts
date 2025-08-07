@@ -17,6 +17,19 @@ try {
     console.error('Error loading box data:', error);
 }
 
+function getImageData() {
+      
+    // Load existing image data
+    let imageData: any = {};
+    const imageDataPath = path.join(__dirname, 'image-data.json');
+    
+    if (fs.existsSync(imageDataPath)) {
+      const imageDataContent = fs.readFileSync(imageDataPath, 'utf8');
+      imageData = JSON.parse(imageDataContent);
+    }
+    return imageData;
+}
+
 // Middleware
 app.use(express.json());
 app.use(express.static('public'));
@@ -38,6 +51,10 @@ app.get('/api/types', (req, res) => {
 
 app.get('/api/box-data', (req, res) => {
   res.json(boxDataConfig);
+});
+
+app.get('/api/image-data', (req, res) => {
+  res.json(getImageData());
 });
 
 app.get('/api/base-images/:type', (req, res) => {
@@ -74,13 +91,7 @@ app.get('/api/design-images', (req, res) => {
     );
     
     // Load existing image data to check completion status
-    let imageData: any = {};
-    const imageDataPath = path.join(__dirname, 'image-data.json');
-    
-    if (fs.existsSync(imageDataPath)) {
-      const imageDataContent = fs.readFileSync(imageDataPath, 'utf8');
-      imageData = JSON.parse(imageDataContent);
-    }
+    let imageData: any = getImageData();
     
     // For each design image, check which types have been completed
     const designImagesWithStatus = imageFiles.map(file => {
@@ -115,13 +126,7 @@ app.get('/api/type-completion', (req, res) => {
     );
     
     // Load existing image data
-    let imageData: any = {};
-    const imageDataPath = path.join(__dirname, 'image-data.json');
-    
-    if (fs.existsSync(imageDataPath)) {
-      const imageDataContent = fs.readFileSync(imageDataPath, 'utf8');
-      imageData = JSON.parse(imageDataContent);
-    }
+    let imageData: any = getImageData();
     
     // Check completion status for each type
     const typeCompletion: any = {};
@@ -149,13 +154,8 @@ app.post('/api/store-position', (req, res) => {
   
   try {
     // Load existing image data or create new structure
-    let imageData: any = {};
     const imageDataPath = path.join(__dirname, 'image-data.json');
-    
-    if (fs.existsSync(imageDataPath)) {
-      const imageDataContent = fs.readFileSync(imageDataPath, 'utf8');
-      imageData = JSON.parse(imageDataContent);
-    }
+    const imageData: any = getImageData();
     
     // Extract design image name from the URL
     const designImageName = designImage.split('/').pop();
