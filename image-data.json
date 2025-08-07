@@ -133,6 +133,30 @@
       },
       "baseImage": "/hoodie-essential/image_1.jpg",
       "timestamp": "2025-08-06T08:56:05.991Z"
+    },
+    "Blob_Cat_-_Upsized.png": {
+      "x": 242.48333740234375,
+      "y": 287,
+      "width": 318,
+      "height": 305,
+      "scale": {
+        "x": 1.59,
+        "y": 1.525
+      },
+      "baseImage": "/hoodie-essential/image_1.jpg",
+      "timestamp": "2025-08-07T21:18:36.073Z"
+    },
+    "Bubbly_Life_Upsized.png": {
+      "x": 243.5,
+      "y": 248,
+      "width": 309,
+      "height": 356,
+      "scale": {
+        "x": 1.545,
+        "y": 1.78
+      },
+      "baseImage": "/hoodie-essential/image_1.jpg",
+      "timestamp": "2025-08-07T21:19:08.029Z"
     }
   }
 }

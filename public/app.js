@@ -29,6 +29,7 @@ class ImageOverlayEditor {
         this.boxDataConfig = null;
         this.currentBaseType = null;
         this.imageData = null; // Cache for image data
+        this.isHoveringCanvas = false; // Track hover state for preview mode
 
         // Canvas dimensions
         this.canvasWidth = 800;
@@ -159,6 +160,10 @@ class ImageOverlayEditor {
         // Global mouse events for dragging and resizing
         document.addEventListener('mousemove', (e) => this.onMouseMove(e));
         document.addEventListener('mouseup', (e) => this.onMouseUp(e));
+
+        // Canvas hover events for preview mode
+        this.canvasContainer.addEventListener('mouseenter', () => this.onCanvasMouseEnter());
+        this.canvasContainer.addEventListener('mouseleave', () => this.onCanvasMouseLeave());
     }
 
     setupDesignOverlay() {
@@ -403,8 +408,8 @@ class ImageOverlayEditor {
         // Draw base image
         this.ctx.drawImage(this.baseImage, offsetX, offsetY, drawWidth, drawHeight);
 
-        // Draw box if we have box data and preview mode is off
-        if (this.boxData && !this.previewModeCheckbox.checked) {
+        // Draw box if we have box data and (preview mode is off OR mouse is hovering over canvas)
+        if (this.boxData && (!this.previewModeCheckbox.checked || this.isHoveringCanvas)) {
             this.ctx.strokeStyle = '#667eea';
             this.ctx.lineWidth = 3;
             this.ctx.setLineDash([5, 5]);
@@ -711,12 +716,23 @@ class ImageOverlayEditor {
         }
     }
 
-    togglePreviewMode() {
+    onCanvasMouseEnter() {
+        this.isHoveringCanvas = true;
+        this.updatePreviewMode();
+    }
+
+    onCanvasMouseLeave() {
+        this.isHoveringCanvas = false;
+        this.updatePreviewMode();
+    }
+
+    updatePreviewMode() {
         if (!this.designOverlay) return;
 
-        const isPreviewMode = this.previewModeCheckbox.checked;
+        const isPreviewModeEnabled = this.previewModeCheckbox.checked;
+        const shouldShowPreview = isPreviewModeEnabled && !this.isHoveringCanvas;
 
-        if (isPreviewMode) {
+        if (shouldShowPreview) {
             // Hide borders, background, and handles
             this.designOverlay.style.border = 'none';
             this.designOverlay.style.background = 'transparent';
@@ -740,6 +756,10 @@ class ImageOverlayEditor {
 
         // Re-render canvas to show/hide the box
         this.renderCanvas();
+    }
+
+    togglePreviewMode() {
+        this.updatePreviewMode();
     }
 
     showStatus(message, type) {
