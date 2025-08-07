@@ -582,6 +582,9 @@ class ImageOverlayEditor {
 
                 // Refresh the data to update completion indicators
                 await this.refreshCompletionData();
+
+                // Auto-select next incomplete design image
+                await this.selectNextIncompleteDesign();
             } else {
                 this.showStatus('Error storing position data', 'error');
             }
@@ -609,6 +612,72 @@ class ImageOverlayEditor {
             baseImage: positionData.baseImage,
             timestamp: new Date().toISOString()
         };
+    }
+
+    async selectNextIncompleteDesign() {
+        if (!this.currentBaseType || !this.imageData) return;
+
+        try {
+            // Get all design images
+            const designResponse = await fetch('/api/design-images');
+            const designImages = await designResponse.json();
+
+            // Find the next incomplete design image
+            let nextIncompleteDesign = null;
+            let currentIndex = -1;
+
+            // Find current design index
+            const currentDesignUrl = this.designImageSelect.value;
+            for (let i = 0; i < designImages.length; i++) {
+                if (designImages[i].url === currentDesignUrl) {
+                    currentIndex = i;
+                    break;
+                }
+            }
+
+            // Look for next incomplete design starting from current position
+            for (let i = currentIndex + 1; i < designImages.length; i++) {
+                const designImage = designImages[i];
+                const designImageName = designImage.url.split('/').pop();
+                
+                // Check if this design is incomplete for the current type
+                const hasStoredData = this.imageData[this.currentBaseType] && 
+                                    this.imageData[this.currentBaseType][designImageName];
+                
+                if (!hasStoredData) {
+                    nextIncompleteDesign = designImage;
+                    break;
+                }
+            }
+
+            // If no incomplete design found after current, look from the beginning
+            if (!nextIncompleteDesign) {
+                for (let i = 0; i < designImages.length; i++) {
+                    const designImage = designImages[i];
+                    const designImageName = designImage.url.split('/').pop();
+                    
+                    // Check if this design is incomplete for the current type
+                    const hasStoredData = this.imageData[this.currentBaseType] && 
+                                        this.imageData[this.currentBaseType][designImageName];
+                    
+                    if (!hasStoredData) {
+                        nextIncompleteDesign = designImage;
+                        break;
+                    }
+                }
+            }
+
+            // Auto-select the next incomplete design if found
+            if (nextIncompleteDesign) {
+                this.designImageSelect.value = nextIncompleteDesign.url;
+                this.showStatus(`Auto-selected next design: ${nextIncompleteDesign.name}`, 'success');
+            } else {
+                this.showStatus('All designs completed for this type!', 'success');
+            }
+            await this.onDesignImageChange();
+        } catch (error) {
+            console.error('Error selecting next incomplete design:', error);
+        }
     }
 
     resetPosition() {

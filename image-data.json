@@ -1,28 +1,28 @@
 {
   "tee-essential": {
     "Hangry_Upsized.png": {
-      "x": 184.78125,
-      "y": 175.7890625,
-      "width": 430,
-      "height": 372,
+      "x": 183.2833251953125,
+      "y": 100,
+      "width": 432.7166748046875,
+      "height": 530.7833251953125,
       "scale": {
-        "x": 2.15,
-        "y": 1.86
+        "x": 2.1635833740234376,
+        "y": 2.6539166259765623
       },
-      "baseImage": "/tee-essential/image_13.jpg",
-      "timestamp": "2025-08-05T15:07:24.383Z"
+      "baseImage": "/tee-essential/image_1.jpg",
+      "timestamp": "2025-08-07T21:27:07.267Z"
     },
     "Moon_Cheese_Upsized.png": {
-      "x": 244.78125,
-      "y": 163,
+      "x": 243.7833251953125,
+      "y": 139,
       "width": 310,
       "height": 396,
       "scale": {
         "x": 1.55,
         "y": 1.98
       },
-      "baseImage": "/tee-essential/image_13.jpg",
-      "timestamp": "2025-08-05T15:08:25.300Z"
+      "baseImage": "/tee-essential/image_1.jpg",
+      "timestamp": "2025-08-07T21:27:26.254Z"
     },
     "Blob_Cat_-_Upsized.png": {
       "x": 263.5,
@@ -37,16 +37,16 @@
       "timestamp": "2025-08-07T09:24:41.639Z"
     },
     "Sluggin_Upsized.png": {
-      "x": 189.5,
-      "y": 56,
-      "width": 428,
-      "height": 614,
+      "x": 182.5,
+      "y": 60,
+      "width": 442,
+      "height": 610,
       "scale": {
-        "x": 2.14,
-        "y": 3.07
+        "x": 2.21,
+        "y": 3.05
       },
       "baseImage": "/tee-essential/image_1.jpg",
-      "timestamp": "2025-08-07T10:15:16.581Z"
+      "timestamp": "2025-08-07T21:27:56.806Z"
     },
     "Bubbly_Life_Upsized.png": {
       "x": 242.7833251953125,
@@ -73,8 +73,8 @@
       "timestamp": "2025-08-07T10:15:56.453Z"
     },
     "Drip_Upsized.png": {
-      "x": 210.7833251953125,
-      "y": 97,
+      "x": 222.7833251953125,
+      "y": 98,
       "width": 394,
       "height": 513,
       "scale": {
@@ -82,7 +82,7 @@
         "y": 2.565
       },
       "baseImage": "/tee-essential/image_1.jpg",
-      "timestamp": "2025-08-07T10:16:18.956Z"
+      "timestamp": "2025-08-07T21:26:39.181Z"
     },
     "Rainbow_Vibe_Upsized-crop_no_bg.png": {
       "x": 253.7833251953125,
@@ -97,16 +97,16 @@
       "timestamp": "2025-08-07T10:16:33.159Z"
     },
     "The_Retro_Tropics_Upsized.png": {
-      "x": 240.5,
-      "y": 113,
-      "width": 307,
-      "height": 466,
+      "x": 220.2833251953125,
+      "y": 92,
+      "width": 337,
+      "height": 486,
       "scale": {
-        "x": 1.535,
-        "y": 2.33
+        "x": 1.685,
+        "y": 2.43
       },
       "baseImage": "/tee-essential/image_1.jpg",
-      "timestamp": "2025-08-07T10:17:01.738Z"
+      "timestamp": "2025-08-07T21:28:24.789Z"
     },
     "Untitled_Artwork.png": {
       "x": 261.5,
@@ -147,16 +147,112 @@
       "timestamp": "2025-08-07T21:18:36.073Z"
     },
     "Bubbly_Life_Upsized.png": {
-      "x": 243.5,
+      "x": 240.98333740234375,
       "y": 248,
       "width": 309,
       "height": 356,
       "scale": {
-        "x": 1.545,
-        "y": 1.78
+        "x": null,
+        "y": null
       },
       "baseImage": "/hoodie-essential/image_1.jpg",
-      "timestamp": "2025-08-07T21:19:08.029Z"
+      "timestamp": "2025-08-07T21:34:51.465Z"
+    },
+    "Graffiti_Snake_Upsized.png": {
+      "x": 286.98333740234375,
+      "y": 280,
+      "width": 229.01666259765625,
+      "height": 326.683349609375,
+      "scale": {
+        "x": 1.1450833129882811,
+        "y": 1.633416748046875
+      },
+      "baseImage": "/hoodie-essential/image_6.jpg",
+      "timestamp": "2025-08-07T21:22:12.990Z"
+    },
+    "": {
+      "x": 275.48333740234375,
+      "y": 270,
+      "width": 251.51666259765625,
+      "height": 344.683349609375,
+      "scale": {
+        "x": 1.2575833129882812,
+        "y": 1.723416748046875
+      },
+      "baseImage": "/hoodie-essential/image_6.jpg",
+      "timestamp": "2025-08-07T21:22:31.745Z"
+    },
+    "Hangry_Upsized.png": {
+      "x": 252.98333740234375,
+      "y": 238,
+      "width": 296.5,
+      "height": 407,
+      "scale": {
+        "x": 1.4825,
+        "y": 2.035
+      },
+      "baseImage": "/hoodie-essential/image_6.jpg",
+      "timestamp": "2025-08-07T21:23:02.835Z"
+    },
+    "Moon_Cheese_Upsized.png": {
+      "x": 245.98333740234375,
+      "y": 207.683349609375,
+      "width": 311,
+      "height": 445,
+      "scale": {
+        "x": 1.555,
+        "y": 2.225
+      },
+      "baseImage": "/hoodie-essential/image_6.jpg",
+      "timestamp": "2025-08-07T21:23:42.741Z"
+    },
+    "Sluggin_Upsized.png": {
+      "x": 268.98333740234375,
+      "y": 225,
+      "width": 287,
+      "height": 413,
+      "scale": {
+        "x": 1.435,
+        "y": 2.065
+      },
+      "baseImage": "/hoodie-essential/image_6.jpg",
+      "timestamp": "2025-08-07T21:24:30.781Z"
+    },
+    "The_Retro_Tropics_Upsized.png": {
+      "x": 258.5,
+      "y": 221,
+      "width": 284,
+      "height": 419,
+      "scale": {
+        "x": 1.42,
+        "y": 2.095
+      },
+      "baseImage": "/hoodie-essential/image_6.jpg",
+      "timestamp": "2025-08-07T21:24:56.407Z"
+    },
+    "Rainbow_Vibe_Upsized-crop_no_bg.png": {
+      "x": 312.5,
+      "y": 312,
+      "width": 193.5,
+      "height": 241,
+      "scale": {
+        "x": 0.9675,
+        "y": 1.205
+      },
+      "baseImage": "/hoodie-essential/image_6.jpg",
+      "timestamp": "2025-08-07T21:25:13.152Z"
+    },
+    "Untitled_Artwork.png": {
+      "x": 255.98333740234375,
+      "y": 310.683349609375,
+      "width": 291.01666259765625,
+      "height": 238.68333435058594,
+      "scale": {
+        "x": 1.4550833129882812,
+        "y": 1.1934166717529298
+      },
+      "baseImage": "/hoodie-essential/image_7.jpg",
+      "timestamp": "2025-08-07T21:25:55.715Z"
     }
   }
 }
