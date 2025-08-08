@@ -16,5 +16,23 @@
       "width": 658,
       "height": 842
     }
+  },
+  "kids-supply-hoodie": {
+    "path": "downloaded_images-kids-supply-hoodie",
+    "box": {
+      "x": 690,
+      "y": 784,
+      "width": 504,
+      "height": 506
+    }
+  },
+  "kids-tee": {
+    "path": "downloaded_images-kids-tee",
+    "box": {
+      "x": 605,
+      "y": 528,
+      "width": 684,
+      "height": 876
+    }
   }
 }

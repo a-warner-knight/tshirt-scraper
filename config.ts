@@ -22,6 +22,8 @@ const CONFIG: ScraperConfig = {
     GALLERY_URLs: [
         "https://thetshirtco.com.au/collections/jumpers-hoodies-printing-custom/products/essential-hoodie-custom-printed",
         "https://thetshirtco.com.au/collections/t-shirts-polos-custom-printing/products/essential-tee-custom-printed",
+        "https://thetshirtco.com.au/products/kids-supply-hoodie-as-colour-printed",
+        "https://thetshirtco.com.au/collections/kids-babies-t-shirts-onesies-hoodies-printed/products/kids-toddler-youth-tee-custom-printed",
     ],
 
     // Output directory for downloaded images

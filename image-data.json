@@ -254,5 +254,249 @@
       "baseImage": "/hoodie-essential/image_7.jpg",
       "timestamp": "2025-08-07T21:25:55.715Z"
     }
+  },
+  "kids-supply-hoodie": {
+    "Blob_Cat_-_Upsized.png": {
+      "x": 294.4666748046875,
+      "y": 304,
+      "width": 205.7666778564453,
+      "height": 291,
+      "scale": {
+        "x": 1.0288333892822266,
+        "y": 1.0288530538197944
+      },
+      "baseImage": "/kids-supply-hoodie/image_1.jpg",
+      "timestamp": "2025-08-08T01:09:57.005Z"
+    },
+    "Bubbly_Life_Upsized.png": {
+      "x": 283,
+      "y": 262.58331298828125,
+      "width": 240.5,
+      "height": 340.1166687011719,
+      "scale": {
+        "x": 1.2025,
+        "y": 1.2025088427773745
+      },
+      "baseImage": "/kids-supply-hoodie/image_1.jpg",
+      "timestamp": "2025-08-08T01:10:28.520Z"
+    },
+    "Graffiti_Snake_Upsized.png": {
+      "x": 289.9666748046875,
+      "y": 295.58331298828125,
+      "width": 215.03334045410156,
+      "height": 302.41668701171875,
+      "scale": {
+        "x": 1.0751667022705078,
+        "y": 1.0692176355947485
+      },
+      "baseImage": "/kids-supply-hoodie/image_1.jpg",
+      "timestamp": "2025-08-08T01:10:57.925Z"
+    },
+    "Drip_Upsized.png": {
+      "x": 286,
+      "y": 261.58331298828125,
+      "width": 246.5,
+      "height": 348.6000061035156,
+      "scale": {
+        "x": 1.2325,
+        "y": 1.2325023396604846
+      },
+      "baseImage": "/kids-supply-hoodie/image_1.jpg",
+      "timestamp": "2025-08-08T01:11:20.372Z"
+    },
+    "Moon_Cheese_Upsized.png": {
+      "x": 287,
+      "y": 274.58331298828125,
+      "width": 223.5,
+      "height": 316.066650390625,
+      "scale": {
+        "x": 1.1175,
+        "y": 1.117478139054941
+      },
+      "baseImage": "/kids-supply-hoodie/image_1.jpg",
+      "timestamp": "2025-08-08T01:11:43.589Z"
+    },
+    "Hangry_Upsized.png": {
+      "x": 258.9666748046875,
+      "y": 252.58331298828125,
+      "width": 276.5,
+      "height": 388.41668701171875,
+      "scale": {
+        "x": 1.3825,
+        "y": 1.3732773009847907
+      },
+      "baseImage": "/kids-supply-hoodie/image_1.jpg",
+      "timestamp": "2025-08-08T01:12:03.156Z"
+    },
+    "Rainbow_Vibe_Upsized-crop_no_bg.png": {
+      "x": 324.9666748046875,
+      "y": 326.54998779296875,
+      "width": 144.5,
+      "height": 222,
+      "scale": {
+        "x": 0.7225,
+        "y": 0.7283856502242152
+      },
+      "baseImage": "/kids-supply-hoodie/image_1.jpg",
+      "timestamp": "2025-08-08T01:12:28.209Z"
+    },
+    "Sluggin_Upsized.png": {
+      "x": 271.4666748046875,
+      "y": 256,
+      "width": 259.5,
+      "height": 366.433349609375,
+      "scale": {
+        "x": 1.2975,
+        "y": 1.295553507790453
+      },
+      "baseImage": "/kids-supply-hoodie/image_1.jpg",
+      "timestamp": "2025-08-08T01:12:58.948Z"
+    },
+    "Untitled_Artwork.png": {
+      "x": 289.9666748046875,
+      "y": 344.0333251953125,
+      "width": 214.5,
+      "height": 160.79998779296875,
+      "scale": {
+        "x": 1.0725,
+        "y": 1.0725233560800551
+      },
+      "baseImage": "/kids-supply-hoodie/image_1.jpg",
+      "timestamp": "2025-08-08T01:13:18.945Z"
+    },
+    "The_Retro_Tropics_Upsized.png": {
+      "x": 260,
+      "y": 247.58331298828125,
+      "width": 258.5,
+      "height": 365.566650390625,
+      "scale": {
+        "x": 1.2925,
+        "y": 1.292489225529442
+      },
+      "baseImage": "/kids-supply-hoodie/image_1.jpg",
+      "timestamp": "2025-08-08T01:13:51.501Z"
+    }
+  },
+  "kids-tee": {
+    "Blob_Cat_-_Upsized.png": {
+      "x": 255.7833251953125,
+      "y": 204.316650390625,
+      "width": 287.5,
+      "height": 406.58331298828125,
+      "scale": {
+        "x": 1.4375,
+        "y": 1.437506815120833
+      },
+      "baseImage": "/kids-tee/image_1.jpg",
+      "timestamp": "2025-08-08T01:14:17.866Z"
+    },
+    "Bubbly_Life_Upsized.png": {
+      "x": 222.5,
+      "y": 122.08331298828125,
+      "width": 371,
+      "height": 524.6666870117188,
+      "scale": {
+        "x": 1.855,
+        "y": 1.8549997359777357
+      },
+      "baseImage": "/kids-tee/image_1.jpg",
+      "timestamp": "2025-08-08T01:14:44.649Z"
+    },
+    "Drip_Upsized.png": {
+      "x": 208.5,
+      "y": 103.5,
+      "width": 414,
+      "height": 579.3499755859375,
+      "scale": {
+        "x": 2.07,
+        "y": 2.0483367409347597
+      },
+      "baseImage": "/kids-tee/image_1.jpg",
+      "timestamp": "2025-08-08T01:15:08.362Z"
+    },
+    "Graffiti_Snake_Upsized.png": {
+      "x": 254.2833251953125,
+      "y": 195.64999389648438,
+      "width": 291,
+      "height": 411.5333251953125,
+      "scale": {
+        "x": 1.455,
+        "y": 1.4550079669271883
+      },
+      "baseImage": "/kids-tee/image_1.jpg",
+      "timestamp": "2025-08-08T01:15:19.643Z"
+    },
+    "Hangry_Upsized.png": {
+      "x": 173.5,
+      "y": 107,
+      "width": 443,
+      "height": 626.4833374023438,
+      "scale": {
+        "x": 2.215,
+        "y": 2.2149803946859725
+      },
+      "baseImage": "/kids-tee/image_1.jpg",
+      "timestamp": "2025-08-08T01:15:44.440Z"
+    },
+    "Moon_Cheese_Upsized.png": {
+      "x": 247.7833251953125,
+      "y": 147.75,
+      "width": 304,
+      "height": 429.91668701171875,
+      "scale": {
+        "x": 1.52,
+        "y": 1.5200037674230087
+      },
+      "baseImage": "/kids-tee/image_1.jpg",
+      "timestamp": "2025-08-08T01:16:07.699Z"
+    },
+    "Rainbow_Vibe_Upsized-crop_no_bg.png": {
+      "x": 276.2833251953125,
+      "y": 216.316650390625,
+      "width": 251.06666564941406,
+      "height": 382.6000061035156,
+      "scale": {
+        "x": 1.2553333282470702,
+        "y": 1.2553169109076483
+      },
+      "baseImage": "/kids-tee/image_1.jpg",
+      "timestamp": "2025-08-08T01:16:44.866Z"
+    },
+    "Sluggin_Upsized.png": {
+      "x": 178.5,
+      "y": 94.33331298828125,
+      "width": 449,
+      "height": 634.9666748046875,
+      "scale": {
+        "x": 2.245,
+        "y": 2.2449738915690824
+      },
+      "baseImage": "/kids-tee/image_1.jpg",
+      "timestamp": "2025-08-08T01:17:04.318Z"
+    },
+    "The_Retro_Tropics_Upsized.png": {
+      "x": 207.5,
+      "y": 114.66668701171875,
+      "width": 365,
+      "height": 516.183349609375,
+      "scale": {
+        "x": 1.825,
+        "y": 1.8250062390946256
+      },
+      "baseImage": "/kids-tee/image_1.jpg",
+      "timestamp": "2025-08-08T01:17:37.508Z"
+    },
+    "Untitled_Artwork.png": {
+      "x": 254.2833251953125,
+      "y": 267.5,
+      "width": 291,
+      "height": 218.5833282470703,
+      "scale": {
+        "x": 1.455,
+        "y": 1.4579337225854396
+      },
+      "baseImage": "/kids-tee/image_1.jpg",
+      "timestamp": "2025-08-08T01:17:59.219Z"
+    }
   }
 }

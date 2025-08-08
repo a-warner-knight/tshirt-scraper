@@ -26,6 +26,7 @@ class ImageOverlayEditor {
         this.dragStart = { x: 0, y: 0 };
         this.resizeHandle = null;
         this.originalSize = { width: 0, height: 0 };
+        this.designAspectRatio = 1; // Natural aspect ratio of the design image
         this.boxDataConfig = null;
         this.currentBaseType = null;
         this.imageData = null; // Cache for image data
@@ -246,6 +247,7 @@ class ImageOverlayEditor {
 
         try {
             this.designImage = await this.loadImage(selectedUrl);
+            this.designAspectRatio = this.designImage.width / this.designImage.height;
 
             // Try to load previously stored position, otherwise initialize default position
             if (!this.loadStoredPosition()) {
@@ -307,7 +309,7 @@ class ImageOverlayEditor {
                 console.warn('Original size changed from', this.originalSize, 'to', newOriginalSize);
                 // this.originalSize = newOriginalSize;
             }
-            this.originalSize = { width: designWidth, height: designHeight };
+            this.originalSize = newOriginalSize;
 
             return true;
         }
@@ -344,9 +346,10 @@ class ImageOverlayEditor {
         const scaleX = drawWidth / this.baseImage.width;
         const scaleY = drawHeight / this.baseImage.height;
 
-        // Design image starts at 1/4 size of base image
-        const designWidth = drawWidth * 0.25;
-        const designHeight = drawHeight * 0.25;
+        // Design image starts at 1/4 size of base image, maintaining aspect ratio
+        const baseDesignSize = drawWidth * 0.25;
+        const designWidth = baseDesignSize;
+        const designHeight = baseDesignSize / this.designAspectRatio;
 
         // Center the design image
         const x = (this.canvasWidth - designWidth) / 2;
@@ -504,6 +507,32 @@ class ImageOverlayEditor {
                     newLeft = x;
                     newTop = y;
                     break;
+            }
+
+            // Maintain aspect ratio
+            if (newWidth > 0 && newHeight > 0) {
+                const currentAspectRatio = newWidth / newHeight;
+                const targetAspectRatio = this.designAspectRatio;
+
+                if (Math.abs(currentAspectRatio - targetAspectRatio) > 0.01) {
+                    // Adjust dimensions to maintain aspect ratio
+                    if (this.resizeHandle === 'se' || this.resizeHandle === 'nw') {
+                        // For SE and NW handles, prioritize width and adjust height
+                        newHeight = newWidth / targetAspectRatio;
+                        if (this.resizeHandle === 'nw') {
+                            newTop = currentTop + currentRect.height - newHeight;
+                        }
+                    } else {
+                        // For SW and NE handles, prioritize height and adjust width
+                        newWidth = newHeight * targetAspectRatio;
+                        if (this.resizeHandle === 'sw') {
+                            newLeft = currentLeft + currentRect.width - newWidth;
+                        } else if (this.resizeHandle === 'ne') {
+                            // For NE handle, the left position stays the same, only width changes
+                            newLeft = currentLeft;
+                        }
+                    }
+                }
             }
 
             // Minimum size constraint
