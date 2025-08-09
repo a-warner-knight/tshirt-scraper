@@ -1,126 +1,5 @@
-// Functions to assist the squareup dashboard UI
 
-function fixWidth() {
-    const outerElement = document.getElementsByClassName("edit-sheet-container")[0];
-    const innerElement = outerElement.getElementsByClassName("form-fieldset")[0];
-
-    // Remove width: 800px
-    outerElement.style.width = "100%";
-
-    // Remove max-width: 800px
-    innerElement.style.maxWidth = "100%";
-}
-
-// Simulate pressing Tab key (keyCode 9) to trigger blur and focus shift
-function pressTab(input) {
-    ['keydown', 'keyup'].forEach(eventType => {
-        setTimeout(() => {
-            input.dispatchEvent(new KeyboardEvent(eventType, {
-                key: 'Tab',
-                keyCode: 9,
-                which: 9,
-                bubbles: true,
-                cancelable: true,
-            }));
-        }, 100);
-    });
-}
-
-function focusNextElement(current) {
-    const focusableSelectors = [
-        'a[href]',
-        'button:not([disabled])',
-        'input:not([disabled]):not([type="hidden"])',
-        'select:not([disabled])',
-        'textarea:not([disabled])',
-        '[tabindex]:not([tabindex="-1"])'
-    ];
-
-    const focusable = Array.from(document.querySelectorAll(focusableSelectors.join(',')))
-        .filter(el => el.offsetParent !== null); // visible elements
-
-    const index = focusable.indexOf(current);
-
-    if (index > -1 && index < focusable.length - 1) {
-        focusable[index + 1].focus();
-    } else {
-        current.blur(); // no next focusable, so blur current input
-    }
-}
-
-function setInputValueEmber(input, value) {
-    input.select();
-    input.value = value;
-
-    // Dispatch 'input' event
-    input.dispatchEvent(new Event('input', { bubbles: true }));
-
-    focusNextElement(input);
-}
-
-function setWeightInputs(value) {
-    const containers = document.querySelectorAll(
-        '[data-test-editable-variation-table-weight-input-div]'
-    );
-
-    containers.forEach(div => {
-        const input = div.querySelector('input');
-        if (!input) return;
-
-        setInputValueEmber(input, value);
-    });
-
-    return containers;
-}
-
-function setCheckboxesByLabelValue(partialInclude, partialExclude, checked) {
-    if (!Array.isArray(partialInclude)) {
-        partialInclude = [partialInclude];
-    }
-
-    // Grab ALL labels with that attribute (no filtering yet)
-    let labels = Array.from(
-        document.querySelectorAll('label[data-test-editable-variation-table-select-variation]')
-    );
-
-    // Filter to only those that contain ALL partialInclude terms
-    labels = labels.filter(label => {
-        const val = label.getAttribute('data-test-editable-variation-table-select-variation') || '';
-        return partialInclude.every(term => val.includes(term));
-    });
-
-    // If partialExclude provided, filter out those containing it
-    if (partialExclude) {
-        labels = labels.filter(label => {
-            const val = label.getAttribute('data-test-editable-variation-table-select-variation') || '';
-            return !val.includes(partialExclude);
-        });
-    }
-
-    console.log('checked', checked);
-    // Process each checkbox
-    labels.forEach(label => {
-        const checkbox = label.querySelector('input[type="checkbox"]');
-        if (!checkbox) return;
-
-        if (checked === undefined || checked !== checkbox.checked) {
-            checkbox.click();
-        }
-    });
-
-    return labels;
-}
-
-// Get all colours
-`
-I want to find a div with class "item-library-edit__item-options-table__row"
-than contains a div with attribute "data-test-table-cell-option-name"
-that contains a span that has text that contains "Colour"
-then I want the text value of the other div in the same row.
-This div will have attribute "data-test-table-cell-option-values".
-The text in it will be a comma separated list of values.
-I want to return an array of the values.
-`
+// 1) Your existing helper functions (slightly adapted)
 function getColourValues() {
     const rows = document.querySelectorAll('.item-library-edit__item-options-table__row');
     let result = [];
@@ -142,96 +21,65 @@ function getColourValues() {
         }
     });
 
-    return result;
+    return [...new Set(result)]; // unique values
 }
 
-`
-data-test-editable-variation-bulk-update-images
-`
-
-(() => {
-    // 1) Your existing helper functions (slightly adapted)
-    function getColourValues() {
-        const rows = document.querySelectorAll('.item-library-edit__item-options-table__row');
-        let result = [];
-
-        rows.forEach(row => {
-            const nameCell = row.querySelector('div[data-test-table-cell-option-name] span');
-            if (!nameCell) return;
-
-            if (nameCell.textContent.includes('Colour')) {
-                const valueCell = row.querySelector('div[data-test-table-cell-option-values]');
-                if (!valueCell) return;
-
-                const values = valueCell.textContent
-                    .split(',')
-                    .map(v => v.trim())
-                    .filter(Boolean);
-
-                result = result.concat(values);
-            }
-        });
-
-        return [...new Set(result)]; // unique values
+function setCheckboxesByLabelValue(partialInclude, partialExclude, checked) {
+    if (!Array.isArray(partialInclude) || partialInclude.length === 0) {
+        // alert("partialInclude must be a non-empty array of strings");
+        return [];
     }
 
-    function setCheckboxesByLabelValue(partialInclude, partialExclude, checked) {
-        if (!Array.isArray(partialInclude) || partialInclude.length === 0) {
-            alert("partialInclude must be a non-empty array of strings");
-            return [];
-        }
+    let labels = Array.from(
+        document.querySelectorAll('label[data-test-editable-variation-table-select-variation]')
+    );
 
-        let labels = Array.from(
-            document.querySelectorAll('label[data-test-editable-variation-table-select-variation]')
-        );
+    labels = labels.filter(label => {
+        const val = label.getAttribute('data-test-editable-variation-table-select-variation') || '';
+        return partialInclude.every(term => val.includes(term));
+    });
 
+    if (partialExclude) {
         labels = labels.filter(label => {
             const val = label.getAttribute('data-test-editable-variation-table-select-variation') || '';
-            return partialInclude.every(term => val.includes(term));
+            return !val.includes(partialExclude);
         });
+    }
 
-        if (partialExclude) {
-            labels = labels.filter(label => {
-                const val = label.getAttribute('data-test-editable-variation-table-select-variation') || '';
-                return !val.includes(partialExclude);
-            });
+    labels.forEach(label => {
+        const checkbox = label.querySelector('input[type="checkbox"]');
+        if (!checkbox) return;
+
+        if (!checkbox.checked) {
+            checkbox.click(); // simulate click to keep Ember happy
         }
+    });
 
-        labels.forEach(label => {
-            const checkbox = label.querySelector('input[type="checkbox"]');
-            if (!checkbox) return;
+    return labels;
+}
 
-            // Toggle or set state (we'll just check)
-            if (!checkbox.checked) {
-                checkbox.click(); // simulate click to keep Ember happy
-            }
-        });
+function setWeightInputs(value) {
+    const containers = document.querySelectorAll(
+        '[data-test-editable-variation-table-weight-input-div]'
+    );
 
-        return labels;
-    }
+    containers.forEach(div => {
+        const input = div.querySelector('input');
+        if (!input) return;
 
-    function setWeightInputs(value) {
-        const containers = document.querySelectorAll(
-            '[data-test-editable-variation-table-weight-input-div]'
-        );
+        input.focus();
+        input.select();
+        input.value = value;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        input.blur();
+    });
 
-        containers.forEach(div => {
-            const input = div.querySelector('input');
-            if (!input) return;
+    return containers;
+}
 
-            input.focus();
-            input.select();
-            input.value = value;
-            input.dispatchEvent(new Event('input', { bubbles: true }));
-            input.dispatchEvent(new Event('change', { bubbles: true }));
-            input.blur();
-        });
-
-        return containers;
-    }
-
-    // 2) Create panel UI
-
+// 2) Create panel UI
+function createPanel() {
     if (document.getElementById('custom-automation-panel')) {
         console.warn('Automation panel already exists.');
         return;
@@ -346,7 +194,7 @@ data-test-editable-variation-bulk-update-images
     selectBtn.textContent = 'Select';
     selectBtn.style.width = '100%';
     selectBtn.style.padding = '8px';
-    selectBtn.style.marginBottom = '16px';
+    selectBtn.style.marginBottom = '8px';
     selectBtn.style.cursor = 'pointer';
     selectBtn.style.background = '#0a84ff';
     selectBtn.style.border = 'none';
@@ -357,7 +205,7 @@ data-test-editable-variation-bulk-update-images
     selectBtn.onclick = () => {
         const colourVal = colourSelect.value;
         if (!colourVal) {
-            alert('Please select a colour.');
+            // alert('Please select a colour.');
             return;
         }
 
@@ -372,10 +220,34 @@ data-test-editable-variation-bulk-update-images
         }
 
         const matched = setCheckboxesByLabelValue(partialInclude, partialExclude, true);
-        alert(`Selected ${matched.length} matching checkboxes.`);
+        // alert(`Selected ${matched.length} matching checkboxes.`);
     };
 
     content.appendChild(selectBtn);
+
+    // Find the bulk update button
+    const bulkUpdateBtn = document.querySelector('[data-test-editable-variation-bulk-update-images]');
+
+    if (bulkUpdateBtn) {
+        const updateBtn = document.createElement('button');
+        updateBtn.textContent = "Update 'em";
+        updateBtn.style.width = '100%';
+        updateBtn.style.padding = '8px';
+        updateBtn.style.marginBottom = '16px';
+        updateBtn.style.cursor = 'pointer';
+        updateBtn.style.background = '#28a745';
+        updateBtn.style.border = 'none';
+        updateBtn.style.borderRadius = '4px';
+        updateBtn.style.color = '#fff';
+        updateBtn.style.fontWeight = 'bold';
+
+        updateBtn.onclick = () => {
+            bulkUpdateBtn.click();
+        };
+
+        // Insert it below the Select button
+        content.insertBefore(updateBtn, content.children[content.children.indexOf(selectBtn) + 1]);
+    }
 
     // Weight input
     const weightLabel = document.createElement('label');
@@ -409,15 +281,24 @@ data-test-editable-variation-bulk-update-images
     weightBtn.onclick = () => {
         const weightVal = weightInput.value.trim();
         if (!weightVal) {
-            alert('Please enter a weight value.');
+            // alert('Please enter a weight value.');
             return;
         }
         setWeightInputs(weightVal);
-        alert('Weight inputs updated.');
+        // alert('Weight inputs updated.');
     };
 
     content.appendChild(weightBtn);
 
     panel.appendChild(content);
     document.body.appendChild(panel);
-})();
+}
+
+function deletePanel() {
+    const panel = document.getElementById('custom-automation-panel');
+    if (panel) {
+        panel.remove();
+    }
+}
+
+createPanel();
