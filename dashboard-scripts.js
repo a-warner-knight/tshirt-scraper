@@ -1,3 +1,15 @@
+function fixWidth() {
+    let outerElement = document.getElementsByClassName("edit-sheet-container")[0];
+    let innerElement = outerElement.getElementsByClassName("form-fieldset")[0];
+
+    // Remove width: 800px
+    outerElement.style.width = "100%";
+    outerElement.style.paddingLeft = "2%";
+    outerElement.style.paddingRight = "100px";
+
+    // Remove max-width: 800px
+    innerElement.style.maxWidth = "100%";
+}
 
 // 1) Your existing helper functions (slightly adapted)
 function getColourValues() {
@@ -25,10 +37,13 @@ function getColourValues() {
 }
 
 function setCheckboxesByLabelValue(partialInclude, partialExclude, checked) {
-    if (!Array.isArray(partialInclude) || partialInclude.length === 0) {
-        // alert("partialInclude must be a non-empty array of strings");
-        return [];
+    if (partialInclude === undefined || partialInclude.length === 0) {
+        partialInclude = ['all'];
     }
+    if (!Array.isArray(partialInclude) || partialInclude.length === 0) {
+        partialInclude = [partialInclude];
+    }
+    // console.log('partialInclude', partialInclude);
 
     let labels = Array.from(
         document.querySelectorAll('label[data-test-editable-variation-table-select-variation]')
@@ -36,6 +51,9 @@ function setCheckboxesByLabelValue(partialInclude, partialExclude, checked) {
 
     labels = labels.filter(label => {
         const val = label.getAttribute('data-test-editable-variation-table-select-variation') || '';
+        if (partialInclude.length === 1 && partialInclude[0] === 'all') {
+            return true;
+        }
         return partialInclude.every(term => val.includes(term));
     });
 
@@ -50,7 +68,8 @@ function setCheckboxesByLabelValue(partialInclude, partialExclude, checked) {
         const checkbox = label.querySelector('input[type="checkbox"]');
         if (!checkbox) return;
 
-        if (!checkbox.checked) {
+        if (checked == undefined || checked != checkbox.checked) {
+            // console.log('checking', label.textContent, checkbox.checked, checked);
             checkbox.click(); // simulate click to keep Ember happy
         }
     });
@@ -144,27 +163,62 @@ function createPanel() {
     colourSelect.style.width = '100%';
     colourSelect.style.marginBottom = '12px';
 
+    // Colour dropdown options — add 'All' at top
     const colours = getColourValues();
-    if (colours.length === 0) {
-        const opt = document.createElement('option');
-        opt.value = '';
-        opt.textContent = 'No colours found';
-        colourSelect.appendChild(opt);
-    } else {
-        const defaultOpt = document.createElement('option');
-        defaultOpt.value = '';
-        defaultOpt.textContent = '-- Select Colour --';
-        colourSelect.appendChild(defaultOpt);
+    const defaultOpt = document.createElement('option');
+    defaultOpt.value = 'all';   // use 'all' as value here
+    defaultOpt.textContent = 'All Colours';
+    colourSelect.appendChild(defaultOpt);
 
-        colours.forEach(col => {
+    colours.forEach(col => {
+        const opt = document.createElement('option');
+        opt.value = col;
+        opt.textContent = col;
+        colourSelect.appendChild(opt);
+    });
+    // Wrap colour label/select and refresh button in a row
+    const colourRow = document.createElement('div');
+    colourRow.style.display = 'flex';
+    colourRow.style.alignItems = 'flex-end';
+    colourRow.style.gap = '8px';
+    // Make label/select take remaining width
+    colourLabel.style.flex = '1';
+    colourSelect.style.flex = '1';
+
+    // Refresh button
+    const refreshBtn = document.createElement('button');
+    refreshBtn.textContent = '↻';
+    refreshBtn.title = 'Refresh colours';
+    refreshBtn.style.width = '36px';
+    refreshBtn.style.height = '36px';
+    refreshBtn.style.marginBottom = '12px';
+    refreshBtn.style.cursor = 'pointer';
+    refreshBtn.style.background = '#444';
+    refreshBtn.style.border = 'none';
+    refreshBtn.style.borderRadius = '4px';
+    refreshBtn.style.color = '#fff';
+    refreshBtn.style.fontWeight = 'bold';
+
+    refreshBtn.onclick = () => {
+        const latestColours = getColourValues();
+        // Repopulate select with default 'All Colours'
+        colourSelect.innerHTML = '';
+        const def = document.createElement('option');
+        def.value = 'all';
+        def.textContent = 'All Colours';
+        colourSelect.appendChild(def);
+        latestColours.forEach(col => {
             const opt = document.createElement('option');
             opt.value = col;
             opt.textContent = col;
             colourSelect.appendChild(opt);
         });
-    }
+    };
+
     colourLabel.appendChild(colourSelect);
-    content.appendChild(colourLabel);
+    colourRow.appendChild(colourLabel);
+    colourRow.appendChild(refreshBtn);
+    content.appendChild(colourRow);
 
     // Youth dropdown
     const youthLabel = document.createElement('label');
@@ -204,14 +258,14 @@ function createPanel() {
 
     selectBtn.onclick = () => {
         const colourVal = colourSelect.value;
-        if (!colourVal) {
-            // alert('Please select a colour.');
-            return;
-        }
-
         const categoryVal = youthSelect.value;
-        let partialInclude = [colourVal];
+
+        let partialInclude = [];
         let partialExclude = null;
+
+        if (colourVal !== 'all' && colourVal !== '') {
+            partialInclude.push(colourVal);
+        }
 
         if (categoryVal === 'includeYouth') {
             partialInclude.push('Youth');
@@ -219,35 +273,47 @@ function createPanel() {
             partialExclude = 'Youth';
         }
 
+        if (partialInclude.length === 0 && !partialExclude) {
+            // No filter criteria; maybe alert or just do nothing
+            alert('Please select a filter.');
+            return;
+        }
+
+        selectBtn.disabled = true;
+        // Deselect all checkboxes
+        setCheckboxesByLabelValue(undefined, undefined, false);
+        // Select the checkboxes
         const matched = setCheckboxesByLabelValue(partialInclude, partialExclude, true);
+        selectBtn.disabled = false;
         // alert(`Selected ${matched.length} matching checkboxes.`);
     };
 
     content.appendChild(selectBtn);
 
-    // Find the bulk update button
-    const bulkUpdateBtn = document.querySelector('[data-test-editable-variation-bulk-update-images]');
+    // Bulk update button
+    const updateBtn = document.createElement('button');
+    updateBtn.textContent = "Update 'em";
+    updateBtn.style.width = '100%';
+    updateBtn.style.padding = '8px';
+    updateBtn.style.marginBottom = '16px';
+    updateBtn.style.cursor = 'pointer';
+    updateBtn.style.background = '#28a745';
+    updateBtn.style.border = 'none';
+    updateBtn.style.borderRadius = '4px';
+    updateBtn.style.color = '#fff';
+    updateBtn.style.fontWeight = 'bold';
 
-    if (bulkUpdateBtn) {
-        const updateBtn = document.createElement('button');
-        updateBtn.textContent = "Update 'em";
-        updateBtn.style.width = '100%';
-        updateBtn.style.padding = '8px';
-        updateBtn.style.marginBottom = '16px';
-        updateBtn.style.cursor = 'pointer';
-        updateBtn.style.background = '#28a745';
-        updateBtn.style.border = 'none';
-        updateBtn.style.borderRadius = '4px';
-        updateBtn.style.color = '#fff';
-        updateBtn.style.fontWeight = 'bold';
-
-        updateBtn.onclick = () => {
+    updateBtn.onclick = () => {
+        // Find the bulk update button
+        const bulkUpdateBtn = document.querySelector('[data-test-editable-variation-bulk-update-images]');
+        if (bulkUpdateBtn) {
             bulkUpdateBtn.click();
-        };
+        }
+    };
 
-        // Insert it below the Select button
-        content.insertBefore(updateBtn, content.children[content.children.indexOf(selectBtn) + 1]);
-    }
+    // Insert it below the Select button
+    // content.insertBefore(updateBtn, content.children[content.children.indexOf(selectBtn) + 1]);
+    content.appendChild(updateBtn);
 
     // Weight input
     const weightLabel = document.createElement('label');
@@ -289,6 +355,23 @@ function createPanel() {
     };
 
     content.appendChild(weightBtn);
+
+    // Fix Width button
+    const fixWidthBtn = document.createElement('button');
+    fixWidthBtn.textContent = 'Fix Width';
+    fixWidthBtn.style.width = '100%';
+    fixWidthBtn.style.padding = '8px';
+    fixWidthBtn.style.marginTop = '12px';
+    fixWidthBtn.style.cursor = 'pointer';
+    fixWidthBtn.style.background = '#6c757d';
+    fixWidthBtn.style.border = 'none';
+    fixWidthBtn.style.borderRadius = '4px';
+    fixWidthBtn.style.color = '#fff';
+    fixWidthBtn.style.fontWeight = 'bold';
+    fixWidthBtn.onclick = () => {
+        try { fixWidth(); } catch (e) { console.warn('fixWidth() failed:', e); }
+    };
+    content.appendChild(fixWidthBtn);
 
     panel.appendChild(content);
     document.body.appendChild(panel);

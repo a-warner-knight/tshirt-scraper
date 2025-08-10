@@ -11,7 +11,8 @@
     "dev:config": "ts-node config.ts",
     "web": "ts-node web-app.ts",
     "web:dev": "nodemon --watch web-app.ts --watch config.ts --watch box-data.json --watch image-data.json --exec \"ts-node web-app.ts\"",
-    "web:watch": "nodemon --watch . --ext ts,js,json --ignore node_modules/ --ignore downloaded_images*/ --ignore output*/ --ignore test*/ --ignore target_html/ --exec \"ts-node web-app.ts\""
+    "web:watch": "nodemon --watch . --ext ts,js,json --ignore node_modules/ --ignore downloaded_images*/ --ignore output*/ --ignore test*/ --ignore target_html/ --exec \"ts-node web-app.ts\"",
+    "overlay": "ts-node overlay.ts"
   },
   "keywords": [
     "scraper",
