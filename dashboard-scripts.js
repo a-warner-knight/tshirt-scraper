@@ -78,13 +78,39 @@ function setCheckboxesByLabelValue(partialInclude, partialExclude, checked) {
 }
 
 function setWeightInputs(value) {
+    console.log('setWeightInputs', value);
     const containers = document.querySelectorAll(
         '[data-test-editable-variation-table-weight-input-div]'
     );
 
+    // Poll each input after blur until Ember reflects a trailing '0'
+    function waitForTrailingZero(inputElement, timeoutMs = 3000, intervalMs = 100) {
+        const startTime = Date.now();
+        const timerId = setInterval(() => {
+            const current = (inputElement.value || '').trim();
+            if (current.endsWith('0')) {
+                clearInterval(timerId);
+                return;
+            }
+            if (Date.now() - startTime > timeoutMs) {
+                clearInterval(timerId);
+                // console.warn('Timed out waiting for trailing 0 on weight input:', current);
+            }
+        }, intervalMs);
+    }
+
+    // Parse desired numeric value once
+    const desiredNumber = parseFloat(String(value).trim());
+
     containers.forEach(div => {
         const input = div.querySelector('input');
         if (!input) return;
+
+        // If the current numeric value equals the desired numeric value, skip updating this input
+        const currentNumber = parseFloat((input.value || '').trim());
+        if (Number.isFinite(currentNumber) && Number.isFinite(desiredNumber) && currentNumber === desiredNumber) {
+            return;
+        }
 
         input.focus();
         input.select();
@@ -92,6 +118,9 @@ function setWeightInputs(value) {
         input.dispatchEvent(new Event('input', { bubbles: true }));
         input.dispatchEvent(new Event('change', { bubbles: true }));
         input.blur();
+
+        // After blur, poll until the input value ends with '0' (or times out)
+        waitForTrailingZero(input);
     });
 
     return containers;
@@ -350,7 +379,9 @@ function createPanel() {
             // alert('Please enter a weight value.');
             return;
         }
+        weightBtn.textContent = 'Updating...';
         setWeightInputs(weightVal);
+        weightBtn.textContent = 'Set Weight';
         // alert('Weight inputs updated.');
     };
 

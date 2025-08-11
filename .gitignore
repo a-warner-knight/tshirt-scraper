@@ -10,6 +10,7 @@ custom_images/
 batch_*_images/
 *_images/
 output_*/
+image*/
 
 # Test html
 target*/
